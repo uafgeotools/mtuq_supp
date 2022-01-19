@@ -4,6 +4,9 @@ import json
 
 import numpy as np
 
+import faulthandler
+faulthandler.enable()
+
 
 if len(sys.argv) != 2:
     raise Exception('proper useage: python depth_pygmt.py eid')
@@ -11,7 +14,7 @@ else:
     eid = sys.argv[1]
     print('event id: ', eid)
 
-data_dir = '/Users/amanda/REPOSITORIES/capuaf/20210723042020018/More_output/'
+data_dir = '/home/ammcpherson/REPOSITORIES/mtuq/'
 
 # TEMPORARY
 smodel='tactmod'
@@ -22,7 +25,7 @@ ballsize = '2.5' # controls default beachball size (meca)
 min0 = 1.0e+19 # impossibly large misfit value
 
 # Load in catalog origin information
-file = data_dir + '20210723042020018DC_origin.json'
+file = data_dir + str(eid) + 'DC_origin.json'
 try:
     f = open(file, 'r')
     data = json.load(f)
@@ -37,7 +40,7 @@ except:
 
 
 # Load in best fit MT at each depth
-file = data_dir + '20210723042020018_depths_source.json'
+file = data_dir + str(eid) + '_depths_source.json'
 try:
     f = open(file, 'r')
     data = json.load(f)
@@ -146,7 +149,7 @@ yoffset = 'Y3.5c'
 with pygmt.config(MAP_FRAME_TYPE='plain', PROJ_LENGTH_UNIT='inch', FONT_ANNOT='16'):#, PS_CHAR_ENCODING='Standard+'):
     fig = pygmt.Figure()
     fig.basemap(projection=J, region=R2, frame=['St','xaf+lDepth(km)'])
-    
+    print('made basemap')
     if show_vr:
         fig.basemap(region=R,frame=['E','yaf+l"VR (gray)"'])
         # Plot line segments behind VR
@@ -157,6 +160,7 @@ with pygmt.config(MAP_FRAME_TYPE='plain', PROJ_LENGTH_UNIT='inch', FONT_ANNOT='1
         
             # Plot VR
             fig.plot(x=depth,y=vr,style='p0.25c',color='lightgray')
+            print('plotted vr')
             
         # Switch axis
         fig.basemap(region=R2, frame=['W','yaf+llog(misfit/misfit_min)'])
@@ -174,7 +178,7 @@ with pygmt.config(MAP_FRAME_TYPE='plain', PROJ_LENGTH_UNIT='inch', FONT_ANNOT='1
         try:
             x = [depth[ii], depth[ii+1]]
             y = [lerr[ii], lerr[ii+1]]
-            fig.plot(x=x, y=y, pen='2p')
+            #fig.plot(x=x, y=y, pen='2p')
         except:
             print('skipping...')
 
@@ -211,11 +215,11 @@ with pygmt.config(MAP_FRAME_TYPE='plain', PROJ_LENGTH_UNIT='inch', FONT_ANNOT='1
 
     # Plot title
     xtitle = depth[0]
-    ytitle = ymax2 + (ymax2-ymin2)*0.1
+    ytitle = ymax2 + (ymax2+ymin2)*0.1
     fig.text(x=xtitle,y=ytitle, text=title, font='16p,Helvetica,black',justify='LM',no_clip=True)
-   
+    
 
-    fig.show()
+    fig.savefig('%s_depth.pdf'% (eid))
     
     
 
