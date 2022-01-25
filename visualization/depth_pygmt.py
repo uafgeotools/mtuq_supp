@@ -132,6 +132,7 @@ ymin = -10; ymax = 100;
 ymin2 = -emax/10; ymax2 = emax;
 
 yplot = 1.426*ymin2 # for plotting catalog depth and best fit depth
+yplot = -0.015
 
 R = '%.1f/%.1f/%.1f/%.1f' % (xmin,xmax,ymin,ymax)
 R2 = '%.1f/%.1f/%.1f/%.1f' % (xmin,xmax,ymin2,ymax2)
@@ -149,7 +150,7 @@ yoffset = 'Y3.5c'
 with pygmt.config(MAP_FRAME_TYPE='plain', PROJ_LENGTH_UNIT='inch', FONT_ANNOT='16'):#, PS_CHAR_ENCODING='Standard+'):
     fig = pygmt.Figure()
     fig.basemap(projection=J, region=R2, frame=['St','xaf+lDepth(km)'])
-    print('made basemap')
+    #print('made basemap')
     if show_vr:
         fig.basemap(region=R,frame=['E','yaf+l"VR (gray)"'])
         # Plot line segments behind VR
@@ -160,7 +161,7 @@ with pygmt.config(MAP_FRAME_TYPE='plain', PROJ_LENGTH_UNIT='inch', FONT_ANNOT='1
         
             # Plot VR
             fig.plot(x=depth,y=vr,style='p0.25c',color='lightgray')
-            print('plotted vr')
+            #print('plotted vr')
             
         # Switch axis
         fig.basemap(region=R2, frame=['W','yaf+llog(misfit/misfit_min)'])
@@ -178,7 +179,7 @@ with pygmt.config(MAP_FRAME_TYPE='plain', PROJ_LENGTH_UNIT='inch', FONT_ANNOT='1
         try:
             x = [depth[ii], depth[ii+1]]
             y = [lerr[ii], lerr[ii+1]]
-            #fig.plot(x=x, y=y, pen='2p')
+            fig.plot(x=x, y=y, pen='2p')
         except:
             print('skipping...')
 
@@ -210,12 +211,12 @@ with pygmt.config(MAP_FRAME_TYPE='plain', PROJ_LENGTH_UNIT='inch', FONT_ANNOT='1
         spec = specs[key]
         fig.meca(spec=spec, scale=ballsize,longitude=depth[kk],latitude=lerr[kk],depth=1,plot_longitude=depth[kk], plot_latitude=lerr[kk], G='red')
         mtxt = '%.2f' % (mag[kk])
-        fig.text(x=depth[kk],y=lerr[kk]+0.025,text=mtxt,font='6p,Helvetica,black')
+        fig.text(x=depth[kk],y=lerr[kk]+0.015,text=mtxt,font='6p,Helvetica,black')
 
 
     # Plot title
     xtitle = depth[0]
-    ytitle = ymax2 + (ymax2+ymin2)*0.1
+    ytitle = ymax2 + (ymax2-ymin2)*0.05
     fig.text(x=xtitle,y=ytitle, text=title, font='16p,Helvetica,black',justify='LM',no_clip=True)
     
 
