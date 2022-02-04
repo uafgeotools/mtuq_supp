@@ -21,7 +21,7 @@ smodel='tactmod'
 
 show_vr = False # plot variance reduction on split axes
 imodel = True # draw bars at known layer interfaces
-ballsize = '2.5' # controls default beachball size (meca)
+ballsize = '14p' # controls default beachball size (meca)
 min0 = 1.0e+19 # impossibly large misfit value
 
 # Load in catalog origin information
@@ -71,9 +71,9 @@ for key in data.keys():
             misfit.append(d[k])
         else:
             nkey = new_keys[count]
-            spec[nkey] = d[k]
+            spec[nkey] = float(d[k])
             count += 1
-    spec['exponent'] = 1.0
+    spec['exponent'] = 12
     specs[key] = spec
     
 imin = np.argmin(misfit)
@@ -132,10 +132,10 @@ ymin = -10; ymax = 100;
 ymin2 = -emax/10; ymax2 = emax;
 
 yplot = 1.426*ymin2 # for plotting catalog depth and best fit depth
-yplot = -0.015
+yplot = ymin2
 
 R = '%.1f/%.1f/%.1f/%.1f' % (xmin,xmax,ymin,ymax)
-R2 = '%.1f/%.1f/%.1f/%.1f' % (xmin,xmax,ymin2,ymax2)
+R2 = '%.1f/%.1f/%.3f/%.3f' % (xmin,xmax,ymin2,ymax2)
 
 
 xlab = 'Depth, km'
@@ -147,9 +147,9 @@ yoffset = 'Y3.5c'
 
 # Plotting begins
 
-with pygmt.config(MAP_FRAME_TYPE='plain', PROJ_LENGTH_UNIT='inch', FONT_ANNOT='16'):#, PS_CHAR_ENCODING='Standard+'):
+with pygmt.config(MAP_FRAME_TYPE='plain', PROJ_LENGTH_UNIT='inch', FONT_ANNOT='16', PS_MEDIA='8.5ix11i'):#, PS_CHAR_ENCODING='Standard+'):
     fig = pygmt.Figure()
-    fig.basemap(projection=J, region=R2, frame=['St','xaf+lDepth(km)'])
+    fig.basemap(projection=J, region=R2, frame=['St','xa5f1+lDepth(km)'])
     #print('made basemap')
     if show_vr:
         fig.basemap(region=R,frame=['E','yaf+l"VR (gray)"'])
@@ -169,10 +169,10 @@ with pygmt.config(MAP_FRAME_TYPE='plain', PROJ_LENGTH_UNIT='inch', FONT_ANNOT='1
         fig.basemap(region=R2, frame=['yaf+llog(misfit/misfit_min)'])
 
     # Plot catalog depth as red inverted triangle
-    fig.plot(x=cdep, y=yplot+.01, pen='1p,black', style='i0.5c', color='red', no_clip=True)
+    fig.plot(x=cdep, y=yplot+0.0024, pen='1p,black', style='i0.5c', color='red', no_clip=True)
 
     # Plot best fit depth as white inverted triangle
-    fig.plot(x=min_depth, y=yplot+.01, pen='1p,black', style='i0.5c', color='white', no_clip=True)
+    fig.plot(x=min_depth, y=yplot+0.0024,region=R2, pen='1p,black', style='i0.5c', color='white', no_clip=True)
 
     # Plot line segments in between beach balls
     for ii in range(len(depth)-1):
@@ -209,7 +209,7 @@ with pygmt.config(MAP_FRAME_TYPE='plain', PROJ_LENGTH_UNIT='inch', FONT_ANNOT='1
     for kk in range(len(depth)):
         key = str(int(depth[kk]))
         spec = specs[key]
-        fig.meca(spec=spec, scale=ballsize,longitude=depth[kk],latitude=lerr[kk],depth=1,plot_longitude=depth[kk], plot_latitude=lerr[kk], G='red')
+        fig.meca(spec=spec,scale=ballsize,longitude=depth[kk],latitude=lerr[kk],depth=1,plot_longitude=depth[kk], plot_latitude=lerr[kk], G='red')
         mtxt = '%.2f' % (mag[kk])
         fig.text(x=depth[kk],y=lerr[kk]+0.015,text=mtxt,font='6p,Helvetica,black')
 
