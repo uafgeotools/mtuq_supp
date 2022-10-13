@@ -26,6 +26,7 @@ min0 = 1.0e+19 # impossibly large misfit value
 
 # Load in catalog origin information
 file = data_dir + str(eid) + 'DC_origin.json'
+
 try:
     f = open(file, 'r')
     data = json.load(f)
@@ -145,6 +146,8 @@ ylab2 = 'VR (gray)'
 xoffset = 'X3.5c'
 yoffset = 'Y3.5c'
 
+#debug
+print(depth)
 # Plotting begins
 
 with pygmt.config(MAP_FRAME_TYPE='plain', PROJ_LENGTH_UNIT='inch', FONT_ANNOT='16', PS_MEDIA='8.5ix11i'):#, PS_CHAR_ENCODING='Standard+'):
@@ -220,7 +223,8 @@ with pygmt.config(MAP_FRAME_TYPE='plain', PROJ_LENGTH_UNIT='inch', FONT_ANNOT='1
     fig.text(x=xtitle,y=ytitle, text=title, font='16p,Helvetica,black',justify='LM',no_clip=True)
     
 
-    fig.savefig('%s_depth.pdf'% (eid))
+    fig.savefig('%sDC_depth.pdf'% (eid))
+    fig.savefig('%sDC_depth.png'% (eid))
     
     
 
