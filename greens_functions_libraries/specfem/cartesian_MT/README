@@ -1,1 +1,2 @@
-README
+This directory contains the files for running a source-side moment tensor estimation in MTUQ, after calculating the Green Functions in Specfem3D cartesian.
+Open the Notebook_make_specfem3D_GF.ipynb file for further details in how to run this example. 
