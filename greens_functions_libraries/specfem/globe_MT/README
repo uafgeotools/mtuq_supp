@@ -1,1 +1,3 @@
-README
+This is a preliminary effort towards a small tutorial on how to generate 3D Green's Function in SPECFEM3D_Globe and use them in MTUQ for moment tensor inversions. 
+
+A very basic working directory for SPECFEM3D_Globe is provided, along with all the scripts and directory structures a user needs to generate the provided 3D Green's functions. If, for some reason, you need a new copy of the output from SPECFEM, these are stored in ./specfemglobe_workdir/Backup. No script or notebook provided touches this directory.
