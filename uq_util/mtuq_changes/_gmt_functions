@@ -1,0 +1,413 @@
+#!/bin/bash
+
+
+function gmt_settings_ver4 {
+    gmtdefaults -D > .gmtdefaults4
+    gmt gmtset BASEMAP_TYPE plain
+    gmt gmtset CHAR_ENCODING Standard+
+    gmt gmtset COLOR_FOREGROUND 75/75/75 # for polarity cpt
+    gmt gmtset MEASURE_UNIT inch # cm / inch
+    gmt gmtset PAPER_MEDIA letter
+    gmt gmtset PAGE_ORIENTATION portrait
+    gmt gmtset PLOT_DEGREE_FORMAT ddd.x
+    gmt gmtset LABEL_FONT_SIZE 12
+    gmt gmtset ANOT_FONT_SIZE 12
+}
+
+
+function gmt_settings {
+    gmt gmtset COLOR_FOREGROUND 75/75/75 # for polarity cpt
+    gmt gmtset FONT_ANNOT 12p
+    gmt gmtset FONT_LABEL 12p
+    gmt gmtset FORMAT_GEO_MAP ddd.x
+    gmt gmtset MAP_FRAME_TYPE plain
+    gmt gmtset PROJ_LENGTH_UNIT i # inch
+    gmt gmtset PS_CHAR_ENCODING Standard+
+    gmt gmtset PS_MEDIA letter
+    gmt gmtset PS_PAGE_ORIENTATION portrait
+}
+
+
+function add_markers_from_file {
+    marker_coords_file=$1
+    ps="$2"
+    proj_arg=$3
+    area_arg=$4
+
+    lon=$(cat $marker_coords_file | awk '{print $1}')
+    lat=$(cat $marker_coords_file | awk '{print $2}')
+
+    echo "$lon $lat" |\
+    gmt psxy -N -Sc23p -W2.0p,0/255/0 $proj_arg $area_arg -O -K >> $ps
+
+}
+
+
+function add_marker {
+    marker_type=$1
+    in="$2"
+    ps="$3"
+    proj_arg=$4
+    area_arg=$5
+
+
+    if [ $marker_type -eq 1 ]; then
+        coords="$(idxmin $in)"
+    elif [ $marker_type -eq 2 ]; then
+        coords="$(idxmax $in)"
+    fi
+
+    echo $coords |\
+    gmt psxy -N -Sc23p -W2.0p,0/255/0 $proj_arg $area_arg -O -K >> $ps
+
+}
+
+
+function add_lune_arcs {
+    ps=$1
+    proj_arg=$2
+    area_arg=$3
+
+    (echo -30 35.2644 ; echo 30 54.7356)  |\
+     gmt psxy -N -W2p,0/0/0/35 $proj_arg $area_arg -O -K >> $ps
+
+    (echo -30 -54.7356; echo 30 -35.2644) |\
+     gmt psxy -N -W2p,0/0/0/35 $proj_arg $area_arg -O -K >> $ps
+
+    (echo -30 35.2644 ; echo 30 -35.2644) |\
+    gmt psxy -N -W2p,0/0/0/35 $proj_arg $area_arg -O -K >> $ps
+
+}
+
+
+function add_WSE_arcs {
+    ps=$1
+    proj_arg=$2
+    area_arg=$3
+
+    # east
+    (echo 90 90 ; echo 90 -90)  |\
+     gmt psxy -N -W2p,0/0/0/35 $proj_arg $area_arg -O -K >> $ps
+
+    # south
+    (echo 0 90 ; echo 0 -90)  |\
+     gmt psxy -N -W2p,0/0/0/35 $proj_arg $area_arg -O -K >> $ps
+
+    # west
+    (echo -90 90 ; echo -90 -90)  |\
+    gmt psxy -N -W2p,0/0/0/35 $proj_arg $area_arg -O -K >> $ps
+
+}
+
+
+function add_WSE_arcs_labels {
+    ps=$1
+    proj_arg=$2
+    area_arg=$3
+
+    # east
+    (echo 90 90 ; echo 90 3.5)  |\
+     gmt psxy -N -W1.5p,0/0/0/35 $proj_arg $area_arg -O -K >> $ps
+
+    (echo 90 -90 ; echo 90 -3.5)  |\
+     gmt psxy -N -W1.5p,0/0/0/35 $proj_arg $area_arg -O -K >> $ps
+
+    echo " 90.0 0.0 E" |\
+    gmt pstext -F+f11p,,0/0/0/35+jCM -N $proj_arg $area_arg -O -K >> $ps
+
+
+    # south
+    (echo 0 90 ; echo 0 3.5)  |\
+     gmt psxy -N -W1.5p,0/0/0/35 $proj_arg $area_arg -O -K >> $ps
+
+    (echo 0 -90 ; echo 0 -3.5)  |\
+     gmt psxy -N -W1.5p,0/0/0/35 $proj_arg $area_arg -O -K >> $ps
+
+    echo " 0.0 0.0 S" |\
+    gmt pstext -F+f11p,,0/0/0/35+jCM -N $proj_arg $area_arg -O -K >> $ps
+
+
+    # west
+    (echo -90 90 ; echo -90 3.5)  |\
+    gmt psxy -N -W1.5p,0/0/0/35 $proj_arg $area_arg -O -K >> $ps
+
+    (echo -90 -90 ; echo -90 -3.5)  |\
+    gmt psxy -N -W1.5p,0/0/0/35 $proj_arg $area_arg -O -K >> $ps
+
+    echo " -90.0 0.0 W" |\
+    gmt pstext -F+f11p,,0/0/0/35+jCM -N $proj_arg $area_arg -O -K >> $ps
+
+
+}
+
+
+function add_lune_points {
+    ps=$1
+    proj_arg=$2
+    area_arg=$3
+
+    echo   0.0 -90.0000 |\
+    gmt psxy -N -Sp8p -W1p,0 $proj_arg $area_arg -O -K >> $ps
+
+    echo -30.0 -54.7356 |\
+    gmt psxy -N -Sp8p -W1p,0 $proj_arg $area_arg -O -K >> $ps
+
+    echo -30.0 0.0000   |\
+    gmt psxy -N -Sp8p -W1p,0 $proj_arg $area_arg -O -K >> $ps
+
+    echo -30.0 35.2644  |\
+    gmt psxy -N -Sp8p -W1p,0 $proj_arg $area_arg -O -K >> $ps
+
+    echo   0.0 90.0000  |\
+    gmt psxy -N -Sp8p -W1p,0 $proj_arg $area_arg -O -K >> $ps
+
+    echo 30.0 54.7356   |\
+    gmt psxy -N -Sp8p -W1p,0 $proj_arg $area_arg -O -K >> $ps
+
+    echo 30.0 0.0000    |\
+    gmt psxy -N -Sp8p -W1p,0 $proj_arg $area_arg -O -K >> $ps
+
+    echo 30.0 -35.2644  |\
+    gmt psxy -N -Sp8p -W1p,0 $proj_arg $area_arg -O -K >> $ps
+
+}
+
+
+function add_lune_labels {
+    ps=$1
+    proj_arg=$2
+    area_arg=$3
+
+    echo   0.0 -90.0 ISO   |\
+    gmt pstext -F+f10p+jCB -N $proj_arg $area_arg -O -K -D0p/-1  >> $ps
+
+    echo   0.0  90.0 ISO   |\
+    gmt pstext -F+f10p+jCB -N $proj_arg $area_arg -O -K -D0p/7.5p    >> $ps
+
+    echo -30.0   0.0 CLVD  |\
+    gmt pstext -F+f10p+jRM -N $proj_arg $area_arg -O -K -D-7.5p/0p >> $ps
+
+    echo  30.0   0.0 CLVD  |\
+    gmt pstext -F+f10p+jLM -N $proj_arg $area_arg -O -K -D7.5p/0p  >> $ps
+
+}
+
+
+function add_lune_labels_coords {
+    ps=$1
+    proj_arg=$2
+    area_arg=$3
+
+    echo "  0.0 -90.0000 (-1,-1,-1)" |\
+    gmt pstext -F+f8p+jCT -N $proj_arg $area_arg -O -K -D0p/-10p >> $ps
+
+    echo "-30.0   0.0000 (2,-1,-1)" |\
+    gmt pstext -F+f8p+jRM -N $proj_arg $area_arg -O -K -D-10p/0p >> $ps
+
+    echo "-30.0  35.2644 (1,0,0)" |\
+    gmt pstext -F+f8p+jRM -N $proj_arg $area_arg -O -K -D-10p/0p >> $ps
+
+    echo "  0.0  90.0000 (1,1,1)" |\
+    gmt pstext -F+f8p+jCB -N $proj_arg $area_arg -O -K -D0p/10p  >> $ps
+
+    echo " 30.0  54.7356 (1,1,0)" |\
+    gmt pstext -F+f8p+jLM -N $proj_arg $area_arg -O -K -D10p/0p  >> $ps
+
+    echo " 30.0   0.0000 (1,1,-2)" |\
+    gmt pstext -F+f8p+jLM -N $proj_arg $area_arg -O -K -D10p/0p  >> $ps
+
+    echo " 30.0 -35.2644 (0,0,-1)" |\
+    gmt pstext -F+f8p+jLM -N $proj_arg $area_arg -O -K -D10p/0p  >> $ps
+
+    echo "-30.0 -54.7356 (0,-1,-1)" |\
+    gmt pstext -F+f8p+jRM -N $proj_arg $area_arg -O -K -D-10p/0p >> $ps
+
+    echo   0.0 -90.0 ISO   |\
+    gmt pstext -F+f10p+jCB -N $proj_arg $area_arg -O -K -D0p/-25p   >> $ps
+
+    echo   0.0  90.0 ISO   |\
+    gmt pstext -F+f10p+jCB -N $proj_arg $area_arg -O -K -D0p/20p    >> $ps
+
+    echo -30.0   0.0 CLVD  |\
+    gmt pstext -F+f10p+jRM -N $proj_arg $area_arg -O -K -D-10p/-10p >> $ps
+
+    echo  30.0   0.0 CLVD  |\
+    gmt pstext -F+f10p+jLM -N $proj_arg $area_arg -O -K -D10p/-10p  >> $ps
+
+}
+
+
+function add_title_lune {
+    ps=$1
+    prog_arg=$2
+    area_arg=$3
+    title="$4"
+    subtitle="$5"
+    title_size=$6
+    subtitle_size=$7
+
+    title_fontsize=25p
+    subtitle_fontsize=20p
+
+    if [ -n "$title" ] && [ -n "$subtitle" ]; then
+
+        echo "  0.0  90.0 ${title}" |\
+        gmt pstext -F+f20p+jCB -N $proj_arg $area_arg -O -K -D0p/${title_fontsize} >> $ps
+
+        echo "  0.0  90.0 ${subtitle}" |\
+        gmt pstext -F+f15p+jCT -N $proj_arg $area_arg -O -K -D0p/${subtitle_fontsize} >> $ps
+
+    elif [ -n "$title" ]; then
+
+        echo "  0.0  90.0 ${title}" |\
+        gmt pstext -F+f20p+jCB -N $proj_arg $area_arg -O -K -D0p/${title_fontsize} >> $ps
+
+    fi
+
+}
+
+
+function add_title_vw {
+    ps=$1
+    prog_arg=$2
+    area_arg=$3
+    title="$4"
+    subtitle="$5"
+
+    if [ -n "$title" ] && [ -n "$subtitle" ]; then
+
+        echo "  0.0  1.178 ${title}" |\
+        gmt pstext -F+f20p+jCB -N $proj_arg $area_arg -O -K -D0p/25p >> $ps
+
+        echo "  0.0  1.178 ${subtitle}" |\
+        gmt pstext -F+f15p+jCT -N $proj_arg $area_arg -O -K -D0p/20p >> $ps
+
+    elif [ -n "$title" ]; then
+
+        echo "  0.0  1.178 ${title}" |\
+        gmt pstext -F+f20p+jCB -N $proj_arg $area_arg -O -K -D0p/20p >> $ps
+
+    fi
+
+}
+
+
+function add_title {
+    ps=$1
+    prog_arg=$2
+    area_arg=$3
+    x0=$4
+    y0=$5
+    title="$6"
+    subtitle="$7"
+
+    if [ -n "$title" ] && [ -n "$subtitle" ]; then
+
+        echo "  $x0 $y0 ${title}" |\
+        gmt pstext -F+f${title_size}+jCB -N $proj_arg $area_arg -O -K -D0p/35p >> $ps
+
+        echo "  $x0 $y0 ${subtitle}" |\
+        gmt pstext -F+f${subtitle_size}+jCT -N $proj_arg $area_arg -O -K -D0p/25p >> $ps
+
+    elif [ -n "$title" ]; then
+
+        echo "  $x0 $y0 ${title}" |\
+        gmt pstext -F+f${title_size}+jCB -N $proj_arg $area_arg -O -K -D0p/30p >> $ps
+
+    fi
+
+}
+
+
+function get_image_format_arg {
+    case $1 in
+       BMP) echo -Tb;;
+       EPS) echo -Te;;
+       PDF) echo -Tf;;
+       JPG) echo -Tj;;
+       PNG) echo -Tg;;
+       PPM) echo -Tm;;
+       SVG) echo -Ts;;
+       TIFF) echo -Tt;;
+    esac
+}
+
+
+function get_cpt_args {
+
+    cpt_name=$1
+    cpt_reverse=$2
+
+    if [ $cpt_reverse -ne 0 ]; then
+        echo "-C${cpt_name} -Ic"
+    else
+        echo "-C${cpt_name}"
+    fi
+
+}
+
+
+function get_colorbar_arg1 {
+    # constructs the main colorbar label
+
+    label=$1
+
+    colorbar_arg1="-Bxa"
+
+    if [ ! -z "$label" ]; then
+        colorbar_arg1="${colorbar_arg1}+l${label}"
+    fi
+
+    echo "$colorbar_arg1"
+
+}
+
+
+
+function get_colorbar_exp {
+    # constructs scaling factor 10^exp
+
+    exp=$1
+
+    if [ $exp -ne 0 ]; then
+        echo "-By+l\226 10@+${exp}@+"
+     else
+        echo "-By+l "
+    fi
+
+}
+
+
+function custom_psconvert {
+    in=$1
+    out=$2
+    fmt=$3
+
+    fmt_arg=$(get_image_format_arg $fmt)
+    gmt psconvert ${in} -F${out} -A $fmt_arg
+
+}
+
+
+function custom_psclose {
+cat << EOF >> $1
+%%PageTrailer
+U
+showpage
+
+%%Trailer
+
+end
+%%EOF
+EOF
+}
+
+
+function idxmin {
+    echo $(gmt gmtinfo $1 -El | awk '{print $1, $2}')
+}
+
+
+function idxmax {
+    echo $(gmt gmtinfo $1 -Eh | awk '{print $1, $2}')
+}
