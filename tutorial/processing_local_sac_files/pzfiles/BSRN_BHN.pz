@@ -1,0 +1,31 @@
+* **********************************
+* NETWORK   (KNETWK): ZA
+* STATION    (KSTNM): BSRN
+* LOCATION   (KHOLE):
+* CHANNEL   (KCMPNM): BHN
+* CREATED           : 2021-03-26T00:36:14
+* START             : 2012-10-09T00:00:00
+* END               : 2999-12-31T00:00:00
+* DESCRIPTION       : Basiran
+* LATITUDE          : 31.996
+* LONGITUDE         : 59.118
+* ELEVATION         : 1416
+* DIP               : 90
+* AZIMUTH           : -3
+* INPUT UNIT        : M
+* OUTPUT UNIT       : COUNTS
+* INSTGAIN          : 1.488000e+03 (M/S)
+* SENSITIVITY       : 4.2153e+08
+* A0                : 3.101710e+02 
+* **********************************
+ZEROS   4
+   0.000000e+00      0.000000e+00
+   0.000000e+00      0.000000e+00
+   0.000000e+00      0.000000e+00
+  -9.456194e+02      0.000000e+00
+POLES   4
+  -4.440000e-02     -4.440000e-02
+  -4.440000e-02      4.440000e-02
+  -5.057964e+02     -1.935221e+02
+  -5.057964e+02      1.935221e+02
+CONSTANT   1.307464e+11 
