@@ -1,0 +1,16 @@
+ 1092  ls
+ 1093  cd ..
+ 1094  clear
+ 1095  ls
+ 1096  cd ..
+ 1097  ls
+ 1098  cd COPY_SP2MTUQ
+ 1099  ls
+ 1100  cd 20171201023244
+ 1101  LS
+ 1102  cd OUTPUT_FILES
+ 1103  ls
+ 1104  mkdir scp
+ 1105  history
+ 1106  cp *GIDE* *ZNJK* *SNGE* scp
+ 1107  history
