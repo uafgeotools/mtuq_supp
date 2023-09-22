@@ -235,7 +235,7 @@ def complete_header(process_path,stations,ev_id,evla,evlo,evdp):
             trace.stats.sac['cmpaz'] = 0
 
         name = '{}/{}.{}.{}..HH.{}'.format(process_path,ev_id,trace.stats.network,st_name,trace.stats.channel[-1].lower())
-        print(name)
+        #print(name)
         trace.write(name, format='SAC')
 
 def rotate(process_path,ev_id):
@@ -256,8 +256,10 @@ def rotate(process_path,ev_id):
         
         
         print('Rotating for {},{}'.format(process_path,st_name))
-        stN = read('{}/*{}*.n'.format(process_path,st_name))
-        stE = read('{}/*{}*.e'.format(process_path,st_name))
+        stN = read('{}/{}.{}.{}..HH.n'.format(process_path,ev_id,net,st_name))
+        stE = read('{}/{}.{}.{}..HH.e'.format(process_path,ev_id,net,st_name))
+        #print(stN)
+        #print(stE)
 
         rotated = rotate_ne_rt(stN[0].data,stE[0].data,baz[1])
         
@@ -278,8 +280,12 @@ def rotate(process_path,ev_id):
         #20171201023244.IR.JHBN..HH.z
         r_name = '{}/{}.{}.{}..HH.{}'.format(process_path,ev_id,net,st_name,stN[0].stats.channel[-1].lower())
         t_name = '{}/{}.{}.{}..HH.{}'.format(process_path,ev_id,net,st_name,stE[0].stats.channel[-1].lower())
-
-        stN.write(r_name,format='SAC')
+        print('\twriting {}'.format(r_name))
+        print('\twriting {}'.format(t_name))
+        #print('*****')
+        #print(stN)
+        #print(stE)
+        stN[0].write(r_name,format='SAC')
         stE.write(t_name,format='SAC')
 
 def padd_zeros(event,ev_id,time):
@@ -298,14 +304,10 @@ def padd_zeros(event,ev_id,time):
         #st[0].stats.endtime = st[0].stats.endtime + extra_time
         st.write(d,format='SAC')
 
-def scale_amplitude(event,scale):
+def scale_amplitude(event,scale,ev_id):
     print('\tMultiplying by {}, amplitude of {} seismograms\n'.format(scale,event))
-    id_event = event.split('/')[-1]
-
-    if len(id_event) == 0:
-        id_event = event.split('/')[-2]
-
-    data = glob.glob('{}/{}*'.format(event,id_event))
+    data = glob.glob('{}/{}*'.format(event,ev_id))
+    print(len(data))
 
     for d in data:
         st = read(d)
