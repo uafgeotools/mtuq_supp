@@ -20,16 +20,18 @@ def index_st(st_info,s):
     return(stla,stlo)
 
 # Complete header information
-def get_stations_info():
-    open_STATIONS = open('STATIONS','r')
+def get_stations_info(suffix):
+    file_name = 'STATIONS'+str(suffix)
+    open_STATIONS = open(file_name,'r')
     read_STATIONS = open_STATIONS.readlines()
     open_STATIONS.close()
     
     return(read_STATIONS)
 
 # Get hypocenter information    
-def get_event_info():
-    open_info = open('FORCESOLUTION','r')
+def get_event_info(suffix):
+    file_name = 'FORCESOLUTION'+str(suffix)
+    open_info = open(file_name,'r')
     read_info = open_info.readlines()
     evla = float(read_info[3].split()[1])
     evlo = float(read_info[4].split()[1])
@@ -55,10 +57,12 @@ def complete_header(file,sta,net,evla,evlo,evdp,stla,stlo):
     st.write(file,format='SAC')
 
 # Renaming and rewriting the ASCII files to SAC
-def rename_make_sac(list_txt,otime):
-       
-    st_info = get_stations_info()
-    evla,evlo,evdp = get_event_info()
+def rename_make_sac(list_txt,otime,suffix):
+    os.system('mkdir PROCESSED')   
+    st_info = get_stations_info(suffix)
+    evla,evlo,evdp = get_event_info(suffix)
+    dp = str(int(np.ceil(evdp/1000.)))
+    
         
     for file in list_txt:
         
@@ -106,6 +110,7 @@ def rename_make_sac(list_txt,otime):
         st = read(file+'.ascii')
         
         new_name = '%s.%s..%s.F%s.sac' % (net,sta,Wcomp,Fcomp.lower())
+        #new_name = '%s.%s..%s.%s.sac' % (net,sta,Wcomp,Fcomp)
         
         write_name = './PROCESSED/%s' % (new_name)
         
@@ -139,7 +144,7 @@ def rotate(m,scale_factor):
         stN = read('PROCESSED/{}.{}..N.{}.sac'.format(net,st_name,m))
         stE = read('PROCESSED/{}.{}..E.{}.sac'.format(net,st_name,m))
 
-        rotated = rotate_ne_rt(stN[0].data,stE[0].data,baz[1])
+        rotated = rotate_ne_rt(stN[0].data,stE[0].data,baz[2])
     
         stN[0].data = rotated[0]
         stN[0].stats.kcmpnm = 'BHR'
@@ -175,16 +180,44 @@ def rotate(m,scale_factor):
 
 
 # Actually running all the preprocessing steps
-DIR = 'F_GFs/*/'
+DIR_2009 = 'F_GFs/*/'
 otime_2009 = '2009-04-07T20:12:55.000000'
-scale_factor_2009 = 1e17
-otime_2017 = '2017-12-30T11:43:16.278000'
-scale_factor_2017 = 1e15
+scale_factor_2009 = 1e15
+suffix_2009 = '_2009'
+
+DIR_2021 = 'landslide_GFS/*/'
+otime_2021 = '2021-08-09T07:45:50.000000'
+scale_factor_2021 = 1e15
+suffix_2021 = '_2021'
+
+#comp_test has N GF, comp_test2 has S GF
+DIR_test = 'comp_test/*/'
+otime_test = '2000-01-01T00:00:00.000000'
+scale_factor_test = 1e15
+suffix_test = '_test'
+
+#CHANGE THESE
+suffix = suffix_test
+DIR = DIR_test
+otime = otime_test
+scale_factor = scale_factor_test
 
 list_txt=glob.glob(DIR+'*semd')
-rename_make_sac(list_txt,otime_2009)
+rename_make_sac(list_txt,otime,suffix)
 
 M = ['Fe','Fn','Fz']
+#M = ['Mpp','Mrp','Mrr','Mrt','Mtp','Mtt']
 for m in M:
-    rotate(m,scale_factor_2009)
+    rotate(m,scale_factor)
 
+# Move the PROCESSED directory to reflect the suffix
+_,_,evdp = get_event_info(suffix)
+print(evdp)
+if suffix == suffix_2021:
+    dp = '0'
+else:
+    dp = str(int(np.ceil(evdp)))
+mk_dir = 'mkdir PROCESSED%s'%suffix
+os.system(mk_dir)
+mv_dir ='mv PROCESSED PROCESSED%s/%s'%(suffix,str(dp))
+os.system(mv_dir)
