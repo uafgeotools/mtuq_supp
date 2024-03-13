@@ -39,8 +39,8 @@ if __name__=='__main__':
     event_id=     '20090407201255351'
     model=        'ak135'
 
-    SF_path = '/Users/amanda/REPOSITORIES/mtuq_supp/greens_functions_libraries/specfem/cartesian_force/PROCESSED'
-    #SF_path = './SPECFEM_GF'
+    #SF_path = '/Users/amanda/REPOSITORIES/mtuq_supp/greens_functions_libraries/specfem/cartesian_force/PROCESSED_2009'
+    SF_path = './SPECFEM_2009'
     db = open_db(SF_path,format='SPECFEM3D',include_mt=False, include_force=True)
 
     #
@@ -123,7 +123,7 @@ if __name__=='__main__':
         'time': '2009-04-07T20:12:55.000000Z',
         'latitude': 61.454200744628906,
         'longitude': -149.7427978515625,
-        'depth_in_m': 33033.599853515625,
+        'depth_in_m': 33000.0,
         })
 
 
@@ -140,7 +140,7 @@ if __name__=='__main__':
         data = read(path_data, format='sac', 
             event_id=event_id,
             station_id_list=station_id_list,
-            tags=['units:cm', 'type:velocity']) 
+            tags=['units:m', 'type:velocity']) 
 
 
         data.sort_by_distance()
@@ -217,7 +217,7 @@ if __name__=='__main__':
 
         print('Generating figures...\n')
 
-        plot_data_greens2(event_id+'_GF_DC_waveforms.png',
+        plot_data_greens2(event_id+'_3D_DC_waveforms.png',
             data_bw, data_sw, greens_bw, greens_sw, process_bw, process_sw, 
             misfit_bw, misfit_sw, stations, origin, best_source, force_dict)
 

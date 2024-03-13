@@ -180,32 +180,26 @@ def rotate(m,scale_factor):
 
 
 # Actually running all the preprocessing steps
-DIR_2009 = 'F_GFs/*/'
+DIR_2009 = 'EQ_GFS/*/'
 otime_2009 = '2009-04-07T20:12:55.000000'
 scale_factor_2009 = 1e15
 suffix_2009 = '_2009'
 
-DIR_2021 = 'landslide_GFS/*/'
+DIR_2021 = 'LS_GFS/*/'
 otime_2021 = '2021-08-09T07:45:50.000000'
 scale_factor_2021 = 1e15
 suffix_2021 = '_2021'
 
-#comp_test has N GF, comp_test2 has S GF
-DIR_test = 'comp_test/*/'
-otime_test = '2000-01-01T00:00:00.000000'
-scale_factor_test = 1e15
-suffix_test = '_test'
-
 #CHANGE THESE
-suffix = suffix_test
-DIR = DIR_test
-otime = otime_test
-scale_factor = scale_factor_test
+suffix = suffix_2021
+DIR = DIR_2021
+otime = otime_2021
+scale_factor = scale_factor_2021
 
 list_txt=glob.glob(DIR+'*semd')
 rename_make_sac(list_txt,otime,suffix)
 
-M = ['Fe','Fn','Fz']
+M = ['Fe','Fs','Fz']
 #M = ['Mpp','Mrp','Mrr','Mrt','Mtp','Mtt']
 for m in M:
     rotate(m,scale_factor)
