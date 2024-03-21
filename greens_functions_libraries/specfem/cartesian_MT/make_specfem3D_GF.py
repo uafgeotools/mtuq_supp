@@ -136,7 +136,7 @@ def txt2sac(m,time):
         aux = line.split()[0].split(':')[0]
         if aux == m:
             sa = float(line.split()[-1])
-            sc = sa/1e+4
+            sc = sa/1e+7
 
     for i in range(len(list_txt)):
         print('Pre-processing {}'.format(list_txt[i]))
