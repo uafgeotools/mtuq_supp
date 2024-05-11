@@ -404,7 +404,7 @@ def launch_MTUQ(gs_type,vel_model,waves,event,gf_dir,evla,evlo,evdp,mw,ot,ppa,fi
         data = read(path_data, format='sac', 
             event_id=event_id,
             station_id_list=station_id_list,
-            tags=['units:cm', 'type:{}'.format(data_unit)])
+            tags=['units:{}'.format(data_unit), 'type:{}'.format(data_unit)])
         
         data.sort_by_distance()
         stations = data.get_stations()
