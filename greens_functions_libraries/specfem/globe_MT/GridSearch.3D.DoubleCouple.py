@@ -41,7 +41,7 @@ if __name__=='__main__':
     # Path to 3D Green's Function database
     #
     
-    SF_path = './GFs/%s' % event_id
+    SF_path = './GFs/%s/34' % event_id
     db = open_db(SF_path,format='SPECFEM3D')
 
 

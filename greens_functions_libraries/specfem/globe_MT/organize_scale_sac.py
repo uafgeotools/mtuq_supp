@@ -2,6 +2,9 @@ import sys
 import glob
 import os
 
+import pandas as pd
+import numpy as np
+
 from obspy import read
 
 ''' 
@@ -51,11 +54,21 @@ def scale_gf(sc,event):
 
 # Main work starts here
 runs = [1,2,3,4,5,6]
-eid = 20090407201255351 #could be read from CMTSOLUTION
+cmt = './specfemglobe_workdir/DATA/CMTSOLUTION'
+data = pd.read_csv(cmt, skiprows = 1, header = None, sep = ':', index_col = 0, dtype=str, skipinitialspace=True)
+eid = data.iloc[0][1]
+dep = str(int(np.ceil(float(data.iloc[5][1]))))
+#eid = 20090407201255351 #could be read from CMTSOLUTION
 
-new_path = './GFs/%s/' % (str(eid))
-mk_new_dir = 'mkdir ' + new_path
-os.system(mk_new_dir)
+new_path = './GFs/%s/%s/' % (str(eid),str(dep))
+#os.system works strangely for making new directories
+#have to do it in steps
+gfs_path = './GFs/'
+os.system('mkdir '+gfs_path)
+eid_path = './GFs/%s/' %(str(eid))
+os.system('mkdir '+ eid_path)
+dep_path = eid_path+str(dep)+'/'
+os.system('mkdir '+ dep_path)
 
 for run in runs:
     move(eid,run,new_path)
