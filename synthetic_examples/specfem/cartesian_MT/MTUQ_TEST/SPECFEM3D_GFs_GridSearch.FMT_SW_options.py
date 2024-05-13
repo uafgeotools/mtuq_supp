@@ -53,7 +53,7 @@ if __name__=='__main__':
     model=        'ak135'
     #db = open_db('{}/greens/ir'.format(param.mdir),format='FK')
     depth = int(param.evdp/1000)
-    db = open_db('GFs/{}/{}'.format(event_id,depth),format="SPECFEM3D")
+    db = open_db('GFs/{}'.format(event_id),format="SPECFEM3D")
 
     #
     # Body and surface wave measurements will be made separately
